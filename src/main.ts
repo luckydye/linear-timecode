@@ -79,11 +79,24 @@ async function main() {
 	const processor = new AudioWorkletNode(audioCtx, "ltc");
 	gain.connect(processor);
 
+	let lastFrame = Date.now();
+	const frames: number[] = [];
+
 	processor.port.onmessage = ({ data }) => {
 		if (Array.isArray(data)) {
 			drawDebugBuffer(data);
 		} else {
-			display.innerHTML = `${timeCodeToString(data)} \n${new Date().toTimeString()}`;
+			const currFrame = Date.now();
+
+			const delta = currFrame - lastFrame;
+			lastFrame = currFrame;
+
+			frames.push(1000 / delta);
+			if (frames.length > 12) frames.shift();
+
+			display.innerHTML = `${timeCodeToString(data)} -- ${Math.floor(
+				frames.reduce((prev, curr) => prev + curr / frames.length, 0)
+			)}fps \n${new Date().toTimeString()}`;
 		}
 	};
 }
