@@ -56,8 +56,6 @@ const SYNC_WORD = [
 	1, 1, 0, 1
 ];
 
-console.log(globalThis.sampleRate);
-
 let sign = 0;
 let transitions = 0;
 let sampleCount = 0;
@@ -66,31 +64,34 @@ class AudioDBMeter extends AudioWorkletProcessor {
 	process(inputs, outputs, parameters) {
 		const samples = inputs[0][0];
 
-		for (let i = 0; i < samples.length; i++) {
-			if (DEBUG) debugBuffer.push(samples[i]);
+		if (samples) {
+			for (let i = 0; i < samples.length; i++) {
+				if (DEBUG) debugBuffer.push(samples[i]);
 
-			if (samples[i] === 0) continue;
+				if (samples[i] === 0) continue;
 
-			sampleCount++;
+				sampleCount++;
 
-			const currSign = Math.sign(samples[i]);
+				const currSign = Math.sign(samples[i]);
 
-			if (sign !== currSign) {
-				transitions++;
-				sign = currSign;
+				if (sign !== currSign) {
+					transitions++;
+					sign = currSign;
 
-				if (sampleCount >= 16) {
-					// eval transition count, should be either 1 or 2
-					if (transitions === 1) {
-						buffer.push(0);
-					} else if (transitions === 2) {
-						buffer.push(1);
-					} else {
-						// clear buffer on invalid input
-						buffer.length = 0;
+					const periodLength = (globalThis.sampleRate / 48000) * 16;
+					if (sampleCount >= periodLength) {
+						// eval transition count, should be either 1 or 2
+						if (transitions === 1) {
+							buffer.push(0);
+						} else if (transitions === 2) {
+							buffer.push(1);
+						} else {
+							// clear buffer on invalid input
+							buffer.length = 0;
+						}
+						transitions = 0;
+						sampleCount = 0;
 					}
-					transitions = 0;
-					sampleCount = 0;
 				}
 			}
 		}
