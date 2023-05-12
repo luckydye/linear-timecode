@@ -1,4 +1,4 @@
-import ltcWorklet from "../ltc.js?url";
+import ltcWorklet from "../ltc?url";
 import { createSignal } from "solid-js";
 import { render } from "solid-js/web";
 
@@ -59,7 +59,6 @@ async function getMedia() {
 
 async function main() {
 	await audioCtx.audioWorklet.addModule(ltcWorklet);
-
 	const stream = await getMedia();
 
 	render(() => <App stream={stream} />, document.getElementsByTagName("main")[0]);

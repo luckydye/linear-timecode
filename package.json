@@ -1,19 +1,19 @@
 {
 	"scripts": {
-		"dev": "vite build --watch"
+		"dev": "vite",
+		"build": "vite build"
 	},
+	"type": "module",
 	"devDependencies": {
-		"@types/audioworklet": "^0.0.44",
-		"autoprefixer": "^10.4.14",
-		"postcss": "^8.4.23",
-		"tailwindcss": "^3.3.2",
+		"solid-js": "^1.7.4",
 		"vite": "^4.3.4",
 		"vite-plugin-solid": "^2.7.0"
 	},
 	"dependencies": {
-		"@luckydye/vite-plugin-rust": "^1.0.0",
-		"@types/node": "^18.16.3",
-		"solid-js": "^1.7.4",
-		"vite-plugin-wasm": "^3.2.2"
-	}
+		"@types/audioworklet": "^0.0.44",
+		"@types/node": "^18.16.3"
+	},
+	"workspaces": [
+		"packages/**"
+	]
 }
