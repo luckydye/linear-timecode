@@ -6,7 +6,7 @@ import { TimeCode } from "./TimeCode.jsx";
 import { Graph } from "./Graph.jsx";
 
 const audioCtx = new AudioContext();
-window.addEventListener("mousedown", () => {
+window.addEventListener("click", () => {
 	audioCtx.resume();
 });
 
@@ -15,13 +15,7 @@ window.addEventListener("mousedown", () => {
 function App({ stream }) {
 	const [tc, setTc] = createSignal();
 
-	const source = audioCtx.createMediaStreamSource(stream);
-
-	const gain = audioCtx.createGain();
-	source.connect(gain);
-
 	const processor = new AudioWorkletNode(audioCtx, "ltc");
-	gain.connect(processor);
 
 	processor.port.onmessage = ({ data }) => {
 		if (Array.isArray(data)) {
@@ -30,6 +24,13 @@ function App({ stream }) {
 			setTc(data);
 		}
 	};
+
+	window.onclick = () => {
+		const source = audioCtx.createMediaStreamSource(stream);
+		const gain = audioCtx.createGain();
+		source.connect(gain);
+		gain.connect(processor);
+	}
 
 	return (
 		<div>
