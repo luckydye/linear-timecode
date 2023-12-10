@@ -1,4 +1,5 @@
-import { createEffect, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
+import {SwissGL} from "../lib/gl.js";
 
 function timeCodeToString(tc) {
   if (tc && tc.hours)
@@ -12,14 +13,19 @@ function timeCodeToString(tc) {
 }
 
 export function TimeCode(props: { timecode }) {
-  const [fps, setFps] = createSignal(0);
   const [trigger, setTrigger] = createSignal(0);
+  const [frame, setFrame] = createSignal(0);
 
-	const bpm = 93;
+	const bpm = 100;
   const beatOffset = 0.2;
 
   let lastFrame = Date.now();
+  let fps = 0;
   const frames: number[] = [];
+
+  const canvas = document.createElement("canvas");
+
+  const gl = SwissGL(canvas);
 
   const timeString = () => {
     const currFrame = Date.now();
@@ -30,15 +36,31 @@ export function TimeCode(props: { timecode }) {
     frames.push(1000 / delta);
     if (frames.length > 12) frames.shift();
 
-    setFps(frames.reduce((prev, curr) => prev + curr / frames.length, 0));
+    fps = frames.reduce((prev, curr) => prev + curr / frames.length, 0);
 
     const tc = props.timecode;
     if (tc) {
-      const frame = tc.frame + tc.seconds * fps() + tc.minutes * 60 * fps();
+      const f = (tc.minutes * 60 + tc.seconds) * 30 + tc.frame;
+
+      console.log(f);
+
+      setFrame(f);
+
 			const bps = bpm / 60;
 
-			let beat = Math.floor((frame / (fps() / bps) + beatOffset));
+			let beat = Math.floor((f / (30 / bps) + beatOffset));
+
       setTrigger(beat % 2);
+
+      gl({t: f / 10,
+        Mesh:[10, 10],
+        seed: beat % 2,
+        VP:`XY*0.8+sin(t+XY.yx*2.0)*0.2,0,1`,
+        FP:`
+
+        UV,seed,1
+
+        `}, undefined);
     }
 
     return timeCodeToString(props.timecode);
@@ -55,8 +77,11 @@ export function TimeCode(props: { timecode }) {
           'inline-block w-3 h-3 bg-red-500 rounded-full',
           trigger() === 0 ? 'opacity-0' : 'opacity-100'
         ].join(" ")}/>
-        <span class="ml-4">{`${timeString()} - ${Math.floor(fps())}fps`}</span>
+        <span class="ml-4">{`${timeString()} - ${Math.floor(fps)}fps`}</span>
+        <span class="ml-4">{frame()}</span>
       </pre>
+
+      {canvas}
     </div>
   );
 }
