@@ -43,7 +43,7 @@ function parseLTCChunk(chunk) {
 	return timecode;
 }
 
-const DEBUG = true;
+const DEBUG = false;
 let debugBuffer = [];
 
 const buffer = [];

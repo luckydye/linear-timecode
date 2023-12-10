@@ -1,4 +1,4 @@
-import ltcWorklet from "../ltc?url";
+import ltcWorklet from "./ltc?url";
 import { createSignal } from "solid-js";
 import { render } from "solid-js/web";
 
@@ -10,7 +10,7 @@ window.addEventListener("mousedown", () => {
 	audioCtx.resume();
 });
 
-let [graphData, setGraphData] = createSignal([]);
+// let [graphData, setGraphData] = createSignal([]);
 
 function App({ stream }) {
 	const [tc, setTc] = createSignal();
@@ -25,7 +25,7 @@ function App({ stream }) {
 
 	processor.port.onmessage = ({ data }) => {
 		if (Array.isArray(data)) {
-			setGraphData(data);
+			// setGraphData(data);
 		} else {
 			setTc(data);
 		}
@@ -33,8 +33,8 @@ function App({ stream }) {
 
 	return (
 		<div>
-			<Graph data={graphData} />
-			<TimeCode timecode={tc} />
+			{/* <Graph data={graphData} /> */}
+			<TimeCode timecode={tc()} />
 		</div>
 	);
 }
