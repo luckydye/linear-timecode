@@ -43,6 +43,8 @@ function parseLTCChunk(chunk) {
 	return timecode;
 }
 
+export type Timecode = ReturnType<typeof parseLTCChunk>;
+
 const DEBUG = false;
 let debugBuffer = [];
 

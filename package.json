@@ -13,6 +13,7 @@
 		"vite-plugin-solid": "^2.7.0"
 	},
 	"dependencies": {
+		"@rive-app/canvas-advanced": "^2.7.7",
 		"@types/audioworklet": "^0.0.44",
 		"@types/node": "^18.16.3"
 	},

@@ -1,5 +1,6 @@
 import { createSignal } from "solid-js";
 import { SwissGL } from "../lib/gl.js";
+import { Timecode } from "./ltc.js";
 
 function timeCodeToString(tc) {
   if (tc && tc.hours)
@@ -12,7 +13,14 @@ function timeCodeToString(tc) {
   return "00:00:00:00";
 }
 
-export function TimeCode(props: { timecode }) {
+
+const canvas = document.createElement("canvas");
+canvas.width = 1280;
+canvas.height = 1280;
+canvas.style.width = "100%";
+const gl = SwissGL(canvas);
+
+export function TimeCode(props: { timecode: Timecode | undefined }) {
   const [trigger, setTrigger] = createSignal(0);
   const [frame, setFrame] = createSignal(0);
 
@@ -24,12 +32,6 @@ export function TimeCode(props: { timecode }) {
   let fps = 0;
   const frames: number[] = [];
 
-  const canvas = document.createElement("canvas");
-  canvas.width = 1280;
-  canvas.height = 1280;
-  canvas.style.width = "100%";
-
-  const gl = SwissGL(canvas);
 
   const timeString = () => {
     const currFrame = Date.now();
@@ -54,22 +56,22 @@ export function TimeCode(props: { timecode }) {
 
       setTrigger(beat % 2);
 
-      gl(
-        {
-          t: f / 10,
-          filter: "nearest",
-          Mesh: [50, 50],
-          seed: beat % 2,
-          VP: `XY*0.2+sin(t+XY.yx*2.0)*0.2,0,1`,
-          FP: `
-            void fragment() {
+      // gl(
+      //   {
+      //     t: f / 10,
+      //     filter: "nearest",
+      //     Mesh: [50, 50],
+      //     seed: beat % 2,
+      //     VP: `XY*0.2+sin(t+XY.yx*2.0)*0.2,0,1`,
+      //     FP: `
+      //       void fragment() {
 
-              FOut = vec4(UV,seed,1);
-            }
-          `,
-        },
-        undefined
-      );
+      //         FOut = vec4(UV,seed,1);
+      //       }
+      //     `,
+      //   },
+      //   undefined
+      // );
     }
 
     return timeCodeToString(props.timecode);
@@ -109,7 +111,7 @@ export function TimeCode(props: { timecode }) {
         </div>
       </div>
 
-      {canvas}
+      {/* {canvas} */}
     </div>
   );
 }
