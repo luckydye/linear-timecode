@@ -45,9 +45,6 @@ function parseLTCChunk(chunk) {
 
 export type Timecode = ReturnType<typeof parseLTCChunk>;
 
-const DEBUG = false;
-let debugBuffer = [];
-
 const buffer = [];
 
 // prettier-ignore
@@ -68,7 +65,6 @@ class AudioDBMeter extends AudioWorkletProcessor {
 
 		if (samples) {
 			for (let i = 0; i < samples.length; i++) {
-				if (DEBUG) debugBuffer.push(samples[i]);
 
 				if (samples[i] === 0) continue;
 
@@ -109,13 +105,6 @@ class AudioDBMeter extends AudioWorkletProcessor {
 				const tc = parseLTCChunk(buffer.splice(0, 80));
 				this.port.postMessage(tc);
 			}
-		}
-
-		if (DEBUG) {
-			while (debugBuffer.length > 128 * 3) {
-				debugBuffer.shift();
-			}
-			this.port.postMessage(debugBuffer);
 		}
 
 		return true;
